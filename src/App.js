@@ -6,7 +6,6 @@ import Main from "./Main";
 
 const initialState = {
   questions: [],
-
   // loading, error, ready, active, finished
   status: "loading",
 };
@@ -17,7 +16,6 @@ function reducer(state, action) {
       return {
         ...state,
         questions: action.payload,
-        status: "ready",
       };
     }
     case "dataFailed": {
@@ -26,6 +24,7 @@ function reducer(state, action) {
         status: "error",
       };
     }
+
     default:
       throw new Error("Action unknown");
   }
@@ -36,10 +35,11 @@ export default function App() {
 
   React.useEffect(
     function () {
-      async function QuestionFetch() {
+      async function fetchApi() {
         try {
-          const res = await fetch(`http://localhost:8000/questions`);
+          const res = await fetch("http://localhost:8000/questions");
           const data = await res.json();
+          console.log(data);
           dispatch({
             type: "dataReceived",
             payload: data,
@@ -50,7 +50,7 @@ export default function App() {
           });
         }
       }
-      QuestionFetch();
+      fetchApi();
     },
     [state]
   );
