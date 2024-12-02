@@ -16,6 +16,7 @@ function reducer(state, action) {
       return {
         ...state,
         questions: action.payload,
+        status: "ready",
       };
     }
     case "dataFailed": {
@@ -33,27 +34,24 @@ function reducer(state, action) {
 export default function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
-  React.useEffect(
-    function () {
-      async function fetchApi() {
-        try {
-          const res = await fetch("http://localhost:8000/questions");
-          const data = await res.json();
-          console.log(data);
-          dispatch({
-            type: "dataReceived",
-            payload: data,
-          });
-        } catch (error) {
-          dispatch({
-            type: "dataFailed",
-          });
-        }
+  React.useEffect(function () {
+    async function fetchApi() {
+      try {
+        const res = await fetch("http://localhost:8000/questions");
+        const data = await res.json();
+        console.log(data);
+        dispatch({
+          type: "dataReceived",
+          payload: data,
+        });
+      } catch (error) {
+        dispatch({
+          type: "dataFailed",
+        });
       }
-      fetchApi();
-    },
-    [state]
-  );
+    }
+    fetchApi();
+  }, []);
 
   return (
     <div className='app'>
