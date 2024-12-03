@@ -3,6 +3,9 @@ import React from "react";
 
 import Header from "./Header";
 import Main from "./Main";
+import Loader from "./Loader";
+import Error from "./Error";
+import StartScreen from "./StartScreen";
 
 const initialState = {
   questions: [],
@@ -33,6 +36,9 @@ function reducer(state, action) {
 
 export default function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
+  const { questions, status } = state; //destructure
+
+  const numQuestions = questions.length;
 
   React.useEffect(function () {
     async function fetchApi() {
@@ -59,10 +65,9 @@ export default function App() {
       <Header />
 
       <Main>
-        <div className='main'>
-          <p>1/15</p>
-          <p>Questions?</p>
-        </div>
+        {status === "loading" && <Loader />}
+        {status === "error" && <Error />}
+        {status === "ready" && <StartScreen num={numQuestions} />}
       </Main>
     </div>
   );
