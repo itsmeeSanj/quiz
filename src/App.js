@@ -1,12 +1,12 @@
 // import DateCounter from "./DateCounter";
 import React from "react";
 
-import Header from "./Header";
-import Main from "./Main";
-import Loader from "./Loader";
-import Error from "./Error";
-import StartScreen from "./StartScreen";
-import Questions from "./Questions";
+import Header from "./components/Header";
+import Main from "./components/Main";
+import Loader from "./components/Loader";
+import Error from "./components/Error";
+import StartScreen from "./components/StartScreen";
+import Questions from "./components/Questions";
 
 const initialState = {
   questions: [],
@@ -33,6 +33,8 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
+        // ccurrent position
+        index: 0,
       };
     }
 
@@ -43,7 +45,7 @@ function reducer(state, action) {
 
 export default function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const { questions, status } = state; //destructure
+  const { questions, status, index } = state; //destructure
 
   const numQuestions = questions.length;
 
@@ -77,7 +79,7 @@ export default function App() {
         {status === "ready" && (
           <StartScreen num={numQuestions} dispatch={dispatch} />
         )}
-        {status === "active" && <Questions />}
+        {status === "active" && <Questions question={questions[index]} />}
       </Main>
     </div>
   );
