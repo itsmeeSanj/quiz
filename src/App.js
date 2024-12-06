@@ -12,6 +12,9 @@ const initialState = {
   questions: [],
   // loading, error, ready, active, finished
   status: "loading",
+  index: 0, // current position
+  answer: null,
+  points: 0,
 };
 
 function reducer(state, action) {
@@ -33,8 +36,17 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
-        // ccurrent position
-        index: 0,
+      };
+    }
+    case "newAnswer": {
+      const question = state.questions.at(state.index);
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          action.payload === question.correctOption
+            ? state.points + question.points
+            : state.points,
       };
     }
 
@@ -45,7 +57,7 @@ function reducer(state, action) {
 
 export default function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const { questions, status, index } = state; //destructure
+  const { questions, status, index, answer } = state; //destructure
 
   const numQuestions = questions.length;
 
@@ -54,7 +66,6 @@ export default function App() {
       try {
         const res = await fetch("http://localhost:8000/questions");
         const data = await res.json();
-        console.log(data);
         dispatch({
           type: "dataReceived",
           payload: data,
@@ -79,7 +90,13 @@ export default function App() {
         {status === "ready" && (
           <StartScreen num={numQuestions} dispatch={dispatch} />
         )}
-        {status === "active" && <Questions question={questions[index]} />}
+        {status === "active" && (
+          <Questions
+            question={questions[index]}
+            dispatch={dispatch}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
