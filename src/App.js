@@ -69,6 +69,14 @@ function reducer(state, action) {
       };
     }
 
+    case "reset": {
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready",
+      };
+    }
+
     default:
       throw new Error("Action unknown");
   }
@@ -137,11 +145,23 @@ export default function App() {
           </>
         )}
         {status === "finished" && (
-          <FinishedScreen
-            points={points}
-            maxPossiblePoints={maxPossiblePoints}
-            highScore={highscore}
-          />
+          <>
+            <FinishedScreen
+              points={points}
+              maxPossiblePoints={maxPossiblePoints}
+              highScore={highscore}
+            />
+            <button
+              className='btn btn-ui'
+              onClick={() =>
+                dispatch({
+                  type: "reset",
+                })
+              }
+            >
+              Restart Quiz
+            </button>
+          </>
         )}
       </Main>
     </div>
