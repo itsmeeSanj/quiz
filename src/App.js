@@ -8,6 +8,7 @@ import Error from "./components/Error";
 import StartScreen from "./components/StartScreen";
 import Questions from "./components/Questions";
 import NextButton from "./components/NextButton";
+import Progress from "./components/Progress";
 
 const initialState = {
   questions: [],
@@ -65,9 +66,14 @@ function reducer(state, action) {
 
 export default function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const { questions, status, index, answer } = state; //destructure
+  const { questions, status, index, answer, points } = state; //destructure
 
   const numQuestions = questions.length;
+
+  const maxPossiblePoints = questions.reduce(
+    (prev, cur) => prev + cur.points,
+    0
+  );
 
   React.useEffect(function () {
     async function fetchApi() {
@@ -100,6 +106,14 @@ export default function App() {
         )}
         {status === "active" && (
           <>
+            <Progress
+              i={index + 1}
+              numQuestion={questions.length}
+              points={points}
+              maxPossiblePoints={maxPossiblePoints}
+              answer={answer}
+            />
+
             <Questions
               question={questions[index]}
               dispatch={dispatch}
