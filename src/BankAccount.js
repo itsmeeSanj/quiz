@@ -24,54 +24,58 @@ const loanAmnt = 5000;
 const initialState = {
   balance: 0,
   loan: 0,
-  isActive: true,
+  isActive: false,
 };
 
 function reducer(state, action) {
+  if (!state?.isActive && !action?.type === "openAccount") return state;
+
   switch (action.type) {
     case "openAccount": {
       return {
         ...state,
         balance: 500,
-        isActive: false,
+        isActive: true,
       };
     }
     case "deposit": {
       return {
         ...state,
-        balance: state.balance + depositeBalance,
+        balance: state.balance + action.payload,
       };
     }
     case "withdraw": {
       return {
         ...state,
-        balance: state.balance - 50,
+        balance:
+          state.balance > 0 ? state.balance - action.payload : state.balance,
       };
     }
     case "requestLoan": {
+      if (state.loan > 0) return state;
+
       return {
         ...state,
-        loan: loanAmnt,
-        balance: loanAmnt === 0 ? loanAmnt + state.balance : state.balance,
+        loan: action.payload,
+        balance: action.payload + state.balance,
       };
     }
     case "payLoan": {
       return {
         ...state,
-        loan: state.loan > 0 ? state.loan - loanAmnt : state.loan,
-        balance: state.loan > 0 ? state.balance - loanAmnt : state.balance,
+        loan: 0,
+        balance: state.balance - state.loan,
       };
     }
     case "close": {
+      if (state.loan > 0 || state.balance !== 0) return state;
       return {
         ...initialState,
-        balance: state.balance === 0,
-        loan: state.loan === 0,
       };
     }
 
     default:
-      break;
+      throw new Error("Unknown");
   }
 }
 
@@ -92,7 +96,7 @@ function BankAccount() {
               type: "openAccount",
             })
           }
-          disabled={balance > 0 ? true : false}
+          disabled={isActive}
         >
           Open account
         </button>
@@ -102,9 +106,10 @@ function BankAccount() {
           onClick={() =>
             dispatch({
               type: "deposit",
+              payload: 150,
             })
           }
-          disabled={isActive}
+          disabled={!isActive}
         >
           Deposit 150
         </button>
@@ -114,9 +119,10 @@ function BankAccount() {
           onClick={() =>
             dispatch({
               type: "withdraw",
+              payload: 50,
             })
           }
-          disabled={isActive}
+          disabled={!isActive}
         >
           Withdraw 50
         </button>
@@ -126,9 +132,10 @@ function BankAccount() {
           onClick={() =>
             dispatch({
               type: "requestLoan",
+              payload: 5000,
             })
           }
-          disabled={isActive}
+          disabled={!isActive}
         >
           Request a loan of 5000
         </button>
@@ -140,7 +147,7 @@ function BankAccount() {
               type: "payLoan",
             })
           }
-          disabled={isActive}
+          disabled={!isActive}
         >
           Pay loan
         </button>
@@ -152,7 +159,7 @@ function BankAccount() {
               type: "close",
             })
           }
-          disabled={isActive}
+          disabled={!isActive}
         >
           Close account
         </button>
