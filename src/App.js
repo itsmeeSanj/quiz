@@ -1,4 +1,3 @@
-// import DateCounter from "./DateCounter";
 import React from "react";
 
 import Header from "./components/Header";
@@ -12,7 +11,7 @@ import Progress from "./components/Progress";
 import FinishedScreen from "./components/FinishedScreen";
 import Footer from "./components/Footer";
 import Timer from "./components/Timer";
-import BankAccount from "./BankAccount";
+// import BankAccount from "./BankAccount";
 
 const SECS_PER_QUESTION = 30;
 
@@ -134,9 +133,9 @@ export default function App() {
   return (
     <div className='app'>
       {/* <DateCounter /> */}
-      {/* <Header /> */}
+      <Header />
 
-      {/* <Main>
+      <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
         {status === "ready" && (
@@ -189,11 +188,11 @@ export default function App() {
             </button>
           </>
         )}
-      </Main> */}
+      </Main>
 
       {/*  */}
 
-      <BankAccount />
+      {/* <BankAccount /> */}
     </div>
   );
 }
