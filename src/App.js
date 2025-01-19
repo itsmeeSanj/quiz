@@ -41,19 +41,9 @@ export default function App() {
         )}
         {status === "active" && (
           <>
-            <Progress
-              i={index + 1}
-              numQuestion={questions.length}
-              points={points}
-              maxPossiblePoints={maxPossiblePoints}
-              answer={answer}
-            />
+            <Progress />
 
-            <Questions
-              question={questions[index]}
-              dispatch={dispatch}
-              answer={answer}
-            />
+            <Questions />
 
             <Footer>
               <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
