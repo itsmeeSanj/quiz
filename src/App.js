@@ -15,18 +15,7 @@ import { useQuiz } from "./context/QuizeProvider";
 // import BankAccount from "./BankAccount";
 
 export default function App() {
-  const {
-    questions,
-    status,
-    index,
-    answer,
-    points,
-    highscore,
-    secondsRemaining,
-    numQuestions,
-    maxPossiblePoints,
-    dispatch,
-  } = useQuiz();
+  const { status, dispatch } = useQuiz();
 
   return (
     <div className='app'>
@@ -36,9 +25,7 @@ export default function App() {
       <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && (
-          <StartScreen num={numQuestions} dispatch={dispatch} />
-        )}
+        {status === "ready" && <StartScreen />}
         {status === "active" && (
           <>
             <Progress />
@@ -46,24 +33,15 @@ export default function App() {
             <Questions />
 
             <Footer>
-              <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
-              <NextButton
-                dispatch={dispatch}
-                answer={answer}
-                numQuestions={numQuestions}
-                index={index}
-              />
+              <Timer />
+              <NextButton />
             </Footer>
           </>
         )}
 
         {status === "finished" && (
           <>
-            <FinishedScreen
-              points={points}
-              maxPossiblePoints={maxPossiblePoints}
-              highScore={highscore}
-            />
+            <FinishedScreen />
             <button
               className='btn btn-ui'
               onClick={() =>

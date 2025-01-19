@@ -1,6 +1,10 @@
 import React from "react";
 
-function Timer({ dispatch, secondsRemaining }) {
+import { useQuiz } from "../context/QuizeProvider";
+
+function Timer() {
+  const { secondsRemaining, dispatch } = useQuiz();
+
   const mins = Math.floor(secondsRemaining / 60);
   const seconds = secondsRemaining % 60;
 
