@@ -3,13 +3,15 @@ import React from "react";
 import { useQuiz } from "../context/QuizeProvider";
 
 function Timer() {
-  const { secondsRemaining, dispatch } = useQuiz();
+  const { secondsRemaining, dispatch, status } = useQuiz();
 
   const mins = Math.floor(secondsRemaining / 60);
   const seconds = secondsRemaining % 60;
 
   React.useEffect(
     function () {
+      if (status !== "active") return;
+
       const id = setInterval(function () {
         dispatch({
           type: "tick",
@@ -18,8 +20,11 @@ function Timer() {
 
       return () => clearInterval(id);
     },
-    [dispatch]
+    [dispatch, status],
   );
+
+  if (secondsRemaining === null) return null;
+
   return (
     <div className='timer'>
       {mins < 10 && "0"}

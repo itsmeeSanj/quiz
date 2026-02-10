@@ -8,8 +8,15 @@ function StartScreen() {
     <div className='start'>
       <h2>Welcome to React Quiz!</h2>
       <h3>{numQuestions} question to test your mastery</h3>
+
+      {/*  */}
+
+      {/* Question selector */}
+
+      {/*  */}
       <button
         className='btn btn-ui'
+        disabled={numQuestions === 0}
         onClick={() => dispatch({ type: "start" })}
       >
         Let's Start

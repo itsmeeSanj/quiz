@@ -13,6 +13,7 @@ const initialState = {
   points: 0,
   highscore: 0,
   secondsRemaining: null,
+  questionLimit: 5,
 };
 
 function reducer(state, action) {
@@ -31,6 +32,10 @@ function reducer(state, action) {
       };
     }
     case "start": {
+      if (!Array.isArray(state.questions) || state.questions.length === 0) {
+        return state;
+      }
+
       return {
         ...state,
         status: "active",
@@ -39,13 +44,18 @@ function reducer(state, action) {
     }
     case "newAnswer": {
       const question = state.questions.at(state.index);
+      const isCorrect = action.payload === question.correct_answer;
+
       return {
         ...state,
+
+        // answer: action.payload,
+        // points: isCorrect ? state.points + 10 : state.points,
+        // correctCount: isCorrect ? state.correctCount + 1 : state.correctCount,
+
         answer: action.payload,
-        points:
-          action.payload === question.correctOption
-            ? state.points + question.points
-            : state.points,
+        points: isCorrect ? state.points + 10 : state.points,
+        correctCount: isCorrect ? state.correctCount + 1 : state.correctCount,
       };
     }
     case "next": {
@@ -71,10 +81,20 @@ function reducer(state, action) {
       };
     }
     case "tick": {
+      if (state.secondsRemaining === null) return state;
+
       return {
         ...state,
         secondsRemaining: state.secondsRemaining - 1,
-        status: state.secondsRemaining === 0 ? "finished" : state.status,
+        status: state.secondsRemaining - 1 <= 0 ? "finished" : state.status,
+        // state.secondsRemaining === 0 ? "finished" : state.status,
+      };
+    }
+
+    case "setQuestionLimit": {
+      return {
+        ...state,
+        questionLimit: action.payload,
       };
     }
 
@@ -93,31 +113,41 @@ function QuizeProvider({ children }) {
     points,
     highscore,
     secondsRemaining,
+    questionLimit,
   } = state; //destructure
 
-  const numQuestions = questions.length;
-  const maxPossiblePoints = questions.reduce(
-    (prev, cur) => prev + cur.points,
-    0
-  );
+  // const numQuestions = questions.length;
+  const numQuestions = Array.isArray(questions) ? questions.length : 0;
+  // const maxPossiblePoints = questions.reduce(
+  //   (prev, cur) => prev + cur.points,
+  //   0,
+  // );
 
-  React.useEffect(function () {
-    async function fetchApi() {
-      try {
-        const res = await fetch("http://localhost:8000/questions");
-        const data = await res.json();
-        dispatch({
-          type: "dataReceived",
-          payload: data,
-        });
-      } catch (error) {
-        dispatch({
-          type: "dataFailed",
-        });
+  const maxPossiblePoints = numQuestions * 10;
+
+  // const res = await fetch("http://localhost:8000/questions");
+  React.useEffect(
+    function () {
+      async function fetchApi() {
+        try {
+          const res = await fetch(
+            `https://opentdb.com/api.php?amount=${questionLimit}`,
+          );
+          const data = await res.json();
+          dispatch({
+            type: "dataReceived",
+            payload: data.results,
+          });
+        } catch (error) {
+          dispatch({
+            type: "dataFailed",
+          });
+        }
       }
-    }
-    fetchApi();
-  }, []);
+      fetchApi();
+    },
+    [questionLimit],
+  );
 
   return (
     <QuizContext.Provider
@@ -131,6 +161,7 @@ function QuizeProvider({ children }) {
         secondsRemaining,
         numQuestions,
         maxPossiblePoints,
+        questionLimit,
 
         dispatch,
       }}
